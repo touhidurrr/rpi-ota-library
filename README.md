@@ -1,17 +1,34 @@
 # Raspberry Pi OTA Library
 
-The project contains many OTAs or Artefacts that can be readily
-used with Raspberry Pi Connect.
+This repository provides pre-built OTA (Over-The-Air) updates for Raspberry Pi devices. All releases are available on the [GitHub Releases](https://github.com/touhidurrr/rpi-ota-library/releases) page.
 
-## Overview
+## Release Structure
 
-This repository contains OTA definitions under `ota/` and a GitHub Actions release pipeline that builds every OTA, publishes `.tar.zst` artefacts, and includes matching `.sha256sum` checksum files.
+For each OTA, 2 files are released:
+
+1. OTA - [name].tar.zst
+2. SHA-256 Checksum - [name].tar.zst.sha256sum
+
+## Project Structure
+
+Each OTA is organized under the `ota/` directory with the following structure:
+
+```
+ota/
+├── <ota-name>/
+│   ├── <files>
+│   └── index.yml
+```
+
+- `<ota-name>`: The name of the OTA (e.g., `cloudflared`, `bun`)
+- `<files>`: files that is packaged with the OTA
+- `index.yml`: Metadata file containing version and other information
 
 ## Available OTAs
 
 The following table lists the currently available OTAs, including their descriptions and download links for the OTA files and their SHA256 checksums.
 
-|    Name     |                Description                |                                                    OTA                                                     |                                                   SHA256 Checksum                                                    |
-| :---------: | :---------------------------------------: | :--------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------: |
-| cloudflared | Cloudflare Tunnel client for Raspberry Pi | [Download](https://github.com/touhidurrr/rpi-ota-cloudflared/releases/latest/download/cloudflared.tar.zst) | [Download](https://github.com/touhidurrr/rpi-ota-cloudflared/releases/latest/download/cloudflared.tar.zst.sha256sum) |
-| bun         | Fast JavaScript runtime for Raspberry Pi  | [Download](https://github.com/touhidurrr/rpi-ota-cloudflared/releases/latest/download/bun.tar.zst) | [Download](https://github.com/touhidurrr/rpi-ota-cloudflared/releases/latest/download/bun.tar.zst.sha256sum) |
+|    Name     |                Description                |                                                  OTA                                                   |                                                 SHA256 Checksum                                                  |
+| :---------: | :---------------------------------------: | :----------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------: |
+| cloudflared | Cloudflare Tunnel client for Raspberry Pi | [Download](https://github.com/touhidurrr/rpi-ota-library/releases/latest/download/cloudflared.tar.zst) | [Download](https://github.com/touhidurrr/rpi-ota-library/releases/latest/download/cloudflared.tar.zst.sha256sum) |
+|     bun     | Fast JavaScript runtime for Raspberry Pi  |     [Download](https://github.com/touhidurrr/rpi-ota-library/releases/latest/download/bun.tar.zst)     |     [Download](https://github.com/touhidurrr/rpi-ota-library/releases/latest/download/bun.tar.zst.sha256sum)     |
