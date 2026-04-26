@@ -1,0 +1,8 @@
+artefact:
+  name: cloudflared
+  version: 1.0.0
+  device_type: rpi
+
+payloads:
+  - name: cloudflared
+    type: script

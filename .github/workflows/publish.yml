@@ -1,0 +1,87 @@
+name: Build and Publish OTA Releases
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ota/**
+      - .github/workflows/**
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Download otamaker script
+        run: |
+          curl -L https://raw.githubusercontent.com/raspberrypi/utils/refs/heads/master/otamaker/otamaker | tee otamaker
+          chmod +x otamaker
+
+      - name: Build OTA packages
+        run: |
+          set -euo pipefail
+          built=0
+          for index in ota/*/index.yml; do
+            [ -f "$index" ] || continue
+            echo "Building OTA from $index"
+            ./otamaker -w "$index"
+            built=$((built + 1))
+          done
+          if [ "$built" -eq 0 ]; then
+            echo "No OTA index files found in ota/*/index.yml"
+            exit 1
+          fi
+
+      - name: Ensure checksum files exist
+        run: |
+          set -euo pipefail
+          for ota in ./*.tar.zst; do
+            [ -f "$ota" ] || continue
+            if [ ! -f "$ota.sha256sum" ]; then
+              sha256sum "$ota" > "$ota.sha256sum"
+            fi
+          done
+
+      - name: Create release metadata
+        id: release
+        run: |
+          set -euo pipefail
+          tag="ota-${GITHUB_RUN_ID}"
+          release_name="OTA Release ${tag}"
+          notes="Automated OTA release generated from ${GITHUB_REF} (${GITHUB_SHA}).\n\nArtifacts:\n"
+
+          for ota in ./*.tar.zst; do
+            [ -f "$ota" ] || continue
+            sha=$(sha256sum "$ota" | cut -d' ' -f1)
+            notes="${notes}- ${ota}\n  SHA-256: ${sha}\n"
+          done
+
+          if ! ls ./*.tar.zst >/dev/null 2>&1; then
+            echo "No OTA artifacts built."
+            exit 1
+          fi
+
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "release_name=$release_name" >> "$GITHUB_OUTPUT"
+          echo "release_notes<<EOF" >> "$GITHUB_OUTPUT"
+          printf '%s\n' "$notes" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ steps.release.outputs.tag }}
+          name: ${{ steps.release.outputs.release_name }}
+          body: ${{ steps.release.outputs.release_notes }}
+          files: |
+            ./*.tar.zst
+            ./*.tar.zst.sha256sum
+          draft: false
+          prerelease: false
