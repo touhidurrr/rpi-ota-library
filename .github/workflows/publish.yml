@@ -21,7 +21,7 @@ jobs:
 
       - name: Download otamaker script
         run: |
-          curl -L https://raw.githubusercontent.com/raspberrypi/utils/refs/heads/master/otamaker/otamaker | tee otamaker
+          curl -L https://raw.githubusercontent.com/raspberrypi/utils/refs/heads/master/otamaker/otamaker -o otamaker
           chmod +x otamaker
 
       - name: Build OTA packages
