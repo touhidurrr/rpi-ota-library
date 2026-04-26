@@ -14,15 +14,16 @@ permissions:
 
 jobs:
   publish:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Download otamaker script
+      - name: Download & Install otamaker
         run: |
           curl -L https://raw.githubusercontent.com/raspberrypi/utils/refs/heads/master/otamaker/otamaker -o otamaker
           chmod +x otamaker
+          sudo mv otamaker /usr/local/bin/
 
       - name: Build OTA packages
         run: |
@@ -33,7 +34,7 @@ jobs:
             echo "Building OTA from $index"
             dir=$(dirname "$index")
             cd "$dir"
-            ../otamaker -w index.yml
+            otamaker -w index.yml
             cd -
             built=$((built + 1))
           done
