@@ -34,4 +34,4 @@ The following table lists the currently available OTAs, including their descript
 |     bun     | Fast JavaScript runtime for Raspberry Pi  |     [Download](https://github.com/touhidurrr/rpi-ota-library/releases/latest/download/bun.tar.zst)     |     [Download](https://github.com/touhidurrr/rpi-ota-library/releases/latest/download/bun.tar.zst.sha256sum)     |
 
 ## Known Issues
-The OTA for Bun does not work. It says HOME not set and exits. Probably because their install script is not built for root installation. What a fix? Maybe contrbute yourself, haha. I am not sure what would be a proper fix for this issue so I will pass it onto you.
+The OTA for Bun does not work. It says HOME not set and exits. Probably because their install script is not built for root installation. Want a fix? Maybe contrbute yourself, haha. I am not sure what would be a proper fix for this issue so I will pass it onto you.
