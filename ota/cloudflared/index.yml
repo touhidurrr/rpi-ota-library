@@ -4,5 +4,5 @@ artefact:
   device_type: rpi
 
 payloads:
-  - name: install
+  - name: install.sh
     type: script
