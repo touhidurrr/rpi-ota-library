@@ -31,13 +31,20 @@ jobs:
           for index in ota/*/index.yml; do
             [ -f "$index" ] || continue
             echo "Building OTA from $index"
-            ./otamaker -w "$index"
+            dir=$(dirname "$index")
+            cd "$dir"
+            ../otamaker -w index.yml
+            cd -
             built=$((built + 1))
           done
           if [ "$built" -eq 0 ]; then
             echo "No OTA index files found in ota/*/index.yml"
             exit 1
           fi
+
+          # Move built artifacts to root directory
+          mv ota/*/*.tar.zst . 2>/dev/null || true
+          mv ota/*/*.tar.zst.sha256sum . 2>/dev/null || true
 
       - name: Ensure checksum files exist
         run: |

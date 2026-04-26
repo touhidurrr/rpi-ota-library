@@ -4,5 +4,5 @@ artefact:
   device_type: rpi
 
 payloads:
-  - name: cloudflared
+  - name: install
     type: script
