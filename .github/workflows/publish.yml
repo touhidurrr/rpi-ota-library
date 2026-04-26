@@ -61,14 +61,26 @@ jobs:
         id: release
         run: |
           set -euo pipefail
-          tag="ota-${GITHUB_RUN_ID}"
-          release_name="OTA Release ${tag}"
-          notes="Automated OTA release generated from ${GITHUB_REF} (${GITHUB_SHA}).\n\nArtifacts:\n"
+
+          # Grab the short commit SHA (first 7 characters)
+          short_sha="${GITHUB_SHA::7}"
+          release_name="Release - ${short_sha}"
+
+          # Write notes to a markdown file
+          {
+            echo "Automated OTA release generated from \`${GITHUB_REF}\`."
+            echo ""
+            echo "### 📦 Artifacts"
+          } > release_notes.md
 
           for ota in ./*.tar.zst; do
             [ -f "$ota" ] || continue
+            
+            filename=$(basename "$ota")
             sha=$(sha256sum "$ota" | cut -d' ' -f1)
-            notes="${notes}- ${ota}\n  SHA-256: ${sha}\n"
+            
+            echo "- **${filename}**" >> release_notes.md
+            echo "  - SHA-256: \`${sha}\`" >> release_notes.md
           done
 
           if ! ls ./*.tar.zst >/dev/null 2>&1; then
@@ -76,16 +88,15 @@ jobs:
             exit 1
           fi
 
-          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          # Export to GitHub Outputs
           echo "release_name=$release_name" >> "$GITHUB_OUTPUT"
           echo "release_notes<<EOF" >> "$GITHUB_OUTPUT"
-          printf '%s\n' "$notes" >> "$GITHUB_OUTPUT"
+          cat release_notes.md >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: ${{ steps.release.outputs.tag }}
           name: ${{ steps.release.outputs.release_name }}
           body: ${{ steps.release.outputs.release_notes }}
           files: |
